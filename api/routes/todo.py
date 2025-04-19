@@ -1,14 +1,18 @@
 from fastapi import APIRouter, HTTPException, status
 from api.models.todo_model import Todo
 from api.schemas.todo import GetTodo, PostTodo, PutTodo
+from typing import Optional
 
 
 todo_router = APIRouter(prefix="/api/v1", tags=["Todo"])
 
 
 @todo_router.get("/todos")
-async def get_all_todos():
-    data = Todo.all()
+async def get_all_todos(done: Optional[bool] = None):
+    if done is not None:
+        data = Todo.filter(done=done)
+    else:
+        data = Todo.all()
     return await GetTodo.from_queryset(data)
 
 
